@@ -33,7 +33,7 @@ public class Chest extends Entity {
         ItemDataGenerator itemDataGenerator = new ItemDataGenerator();
 
         List<ItemData> itemData =
-                IntStream.range(0, random.nextInt(1, 3))
+                IntStream.range(0, random.nextInt(1,3))
                         .mapToObj(i -> itemDataGenerator.generateItemData())
                         .toList();
         return new Chest(

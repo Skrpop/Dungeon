@@ -1,5 +1,6 @@
 package SafeandLoad;
 
+import ecs.GeneralGenerator;
 import ecs.entities.Entity;
 
 import ecs.entities.monsters.Chort;
@@ -76,9 +77,9 @@ public class SafeandLoad {
         // Fügt alle Entities aus dem gespeicherten Spielstand zum Spiel hinzu
         for (String entity : data.getEntities()) {
             switch (entity) {
-                case "Chort" -> Game.getEntitiesToAdd().add(new Chort());
-                case "Goblin" -> Game.getEntitiesToAdd().add(new Goblin());
-                case "LittleChort" -> Game.getEntitiesToAdd().add(new LittleChort());
+                case "Chort" -> Game.getEntitiesToAdd().add(new Chort(GeneralGenerator.getInstance().getStrongMonsterItems(2)));
+                case "Goblin" -> Game.getEntitiesToAdd().add(new Goblin(GeneralGenerator.getInstance().getWeakMonsterItems(2)));
+                case "LittleChort" -> Game.getEntitiesToAdd().add(new LittleChort(GeneralGenerator.getInstance().getWeakMonsterItems(1)));
             }
             System.out.println("geladen");
         }

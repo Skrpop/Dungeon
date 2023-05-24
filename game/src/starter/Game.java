@@ -13,6 +13,7 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
+import ecs.GeneralGenerator;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.entities.Entity;
@@ -171,9 +172,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     @Override
     public void onLevelLoad() {
         currentLevel = levelAPI.getCurrentLevel();
-        if (currentDepth > 0) {
+        /*if (currentDepth > 0) {
             loader.writeSave();
-        }
+        }*/
         for (Entity entity : entities) {
             System.out.println(entity.getClass().getSimpleName());
         }
@@ -191,6 +192,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         // Inkrementiere die Tiefe des Dungeons, nachdem das Level geladen wurde
         currentDepth++;
+        GeneralGenerator.getInstance().createMagicBook();
+        GeneralGenerator.getInstance().makeBagPack();
     }
 
     private int calculateNumberOfMonsters() {
@@ -225,18 +228,18 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         switch (monsterType) {
             case 0:
-                monster = new Chort();
+                monster = new Chort(GeneralGenerator.getInstance().getStrongMonsterItems(2));
                 if (currentDepth > 3) {
-                    monster = new Chort();
+                    monster = new Chort(GeneralGenerator.getInstance().getStrongMonsterItems(2));
                 }
                 // Passen Sie die Stärke des Chort-Monsters basierend auf der Tiefe an
                 break;
             case 1:
-                monster = new Goblin();
+                monster = new Goblin(GeneralGenerator.getInstance().getWeakMonsterItems(2));
                 // Passen Sie die Stärke des Goblin-Monsters basierend auf der Tiefe an
                 break;
             case 2:
-                monster = new LittleChort();
+                monster = new LittleChort(GeneralGenerator.getInstance().getWeakMonsterItems(1));
                 // Passen Sie die Stärke des LittleChort-Monsters basierend auf der Tiefe an
                 break;
             default:

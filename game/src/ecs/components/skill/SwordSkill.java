@@ -10,7 +10,7 @@ public class SwordSkill extends MeleeSkill {
             "weapon",
             0.1f,
             new Damage(1, DamageType.PHYSICAL, null),
-            new Point(10, 10),
+            new Point(1, 1),
             0.3f,
             targetSelection,
             0.1f);

@@ -6,7 +6,12 @@ import ecs.components.AnimationComponent;
 import ecs.components.PositionComponent;
 import ecs.components.VelocityComponent;
 import ecs.components.skill.*;
+import ecs.items.BagPack;
+import ecs.items.ItemData;
 import graphic.Animation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Hero is the player character. It's entity in the ECS. This class helps to setup the hero with
@@ -34,6 +39,7 @@ public class Hero extends Entity {
         setupVelocityComponent();
         setupAnimationComponent();
         setupHitboxComponent();
+        setupInventoryComponent();
         PlayableComponent pc = new PlayableComponent(this);
         setupFireballSkill();
         setupSwordSkill();
@@ -71,4 +77,5 @@ public class Hero extends Entity {
                 (you, other, direction) -> System.out.println("heroCollisionEnter"),
                 (you, other, direction) -> System.out.println("heroCollisionLeave"));
     }
+    private void setupInventoryComponent(){new InventoryComponent(this,20);}//Inventory with 20 space
 }

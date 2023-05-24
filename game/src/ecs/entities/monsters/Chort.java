@@ -2,19 +2,30 @@ package ecs.entities.monsters;
 
 
 import dslToGame.AnimationBuilder;
+import ecs.GeneralGenerator;
 import ecs.components.*;
 import ecs.components.ai.AIComponent;
 import ecs.components.ai.fight.CollideAI;
 import ecs.components.ai.idle.PatrouilleWalk;
 import ecs.components.ai.transition.RangeTransition;
+import ecs.entities.Chest;
+import ecs.entities.Entity;
+import ecs.items.ItemData;
 import graphic.Animation;
+import logging.CustomLogLevel;
+
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 
-public class Chort extends BasicMonster {
+public class Chort extends BasicMonster implements IOnDeathFunction {
+    public final Logger chortLogger = Logger.getLogger(this.getClass().getName());
 
-    public Chort() {
+    public Chort(List<ItemData> items) {
         super(0.3f, 0.3f, 5, "monster/chort/idleLeft", "monster/chort/idleRight", "monster/chort/runLeft", "monster/chort/runRight");
         new PositionComponent(this);
+        setupInventory(items);
         setupVelocityComponent();
         setupAnimationComponent();
         setupAIComponent();
@@ -56,7 +67,7 @@ public class Chort extends BasicMonster {
         Animation dieAnimation = AnimationBuilder.buildAnimation(pathToDieAnimation);
 
         // Erstelle das HealthComponent für das Monster
-        new HealthComponent(this, maxHealthPoints, onDeathFunction, hitAnimation, dieAnimation);
+        new HealthComponent(this, maxHealthPoints, this, hitAnimation, dieAnimation);
     }
 
     @Override
@@ -71,5 +82,53 @@ public class Chort extends BasicMonster {
         float transitionRange = 3.0f;
         RangeTransition rangeTransition = new RangeTransition(transitionRange);
         new AIComponent(this, collideAI, patrouilleWalk, rangeTransition);
+    }
+    public void setupInventory(List<ItemData>items){
+        new InventoryComponent(this,10);
+        for(ItemData i:items){
+            InventoryComponent inv = (InventoryComponent) this.getComponent(InventoryComponent.class).get();
+            inv.addItem(i);
+            chortLogger.log(CustomLogLevel.INFO,"item: "+i.getItemType()+i.getItemName()+"has been added to inventory of"+this.getClass().getName());
+        }
+    }
+    @Override
+    public void onDeath(Entity entity) {
+        dropItems(entity);
+        chortLogger.log(CustomLogLevel.INFO,"Chort has dropped Items");
+    }
+
+    /**
+     * method to drop Items when entity dies(the default iOnDrop had some issues that we could not figure out)
+     * @param entity
+     */
+    private void dropItems(Entity entity) {
+        InventoryComponent inventoryComponent =
+            entity.getComponent(InventoryComponent.class)
+                .map(InventoryComponent.class::cast)
+                .orElseThrow(
+                    () ->
+                        createMissingComponentException(
+                            InventoryComponent.class.getName(), entity));
+        PositionComponent positionComponent =
+            entity.getComponent(PositionComponent.class)
+                .map(PositionComponent.class::cast)
+                .orElseThrow(
+                    () ->
+                        createMissingComponentException(
+                            PositionComponent.class.getName(), entity));
+        List<ItemData> itemData = inventoryComponent.getItems();
+
+        for(ItemData i:itemData){
+            GeneralGenerator.getInstance().dropItems(i,positionComponent.getPosition());
+        }
+    }
+    private static MissingComponentException createMissingComponentException(
+        String Component, Entity e) {
+        return new MissingComponentException(
+            Component
+                + " missing in "
+                + Chest.class.getName()
+                + " in Entity "
+                + e.getClass().getName());
     }
 }
