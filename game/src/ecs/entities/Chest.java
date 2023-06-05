@@ -58,7 +58,7 @@ public class Chest extends Entity {
                         new Animation(DEFAULT_CLOSED_ANIMATION_FRAMES, 100, false),
                         new Animation(DEFAULT_OPENING_ANIMATION_FRAMES, 100, false));
     }
-
+        //Kommentar
     private void dropItems(Entity entity) {
         InventoryComponent inventoryComponent =
                 entity.getComponent(InventoryComponent.class)
